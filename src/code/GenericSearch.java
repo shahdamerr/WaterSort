@@ -2,6 +2,7 @@ package code;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +37,19 @@ public abstract class GenericSearch {
     return successors;
   }
   
+
+  public List<String> getPathToGoal(Node goalNode){
+    List<String> path = new ArrayList<>();
+    Node currentNode = goalNode;
+    while (currentNode.getParent() != null){
+        SimpleEntry<Integer, Integer> action = currentNode.getAction();
+        path.add("Pour" + action.getKey() +  + action.getValue());
+        currentNode = currentNode.getParent();
+    }
+    Collections.reverse(path);
+    return path;
+  }
+
 //this should include pour(i,j)
 public Node bigPour (int i, int j, Node parentNode){
     State newState = parentNode.getState().copy();
