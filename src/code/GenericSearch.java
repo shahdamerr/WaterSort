@@ -43,7 +43,7 @@ public abstract class GenericSearch {
     Node currentNode = goalNode;
     while (currentNode.getParent() != null){
         SimpleEntry<Integer, Integer> action = currentNode.getAction();
-        path.add("Pour" + action.getKey() +  + action.getValue());
+        path.add("Pour_" + action.getKey() + "_" + action.getValue());
         currentNode = currentNode.getParent();
     }
     Collections.reverse(path);
@@ -70,12 +70,14 @@ public Node bigPour (int i, int j, Node parentNode){
     for (int k = 0; k < availableToPour; k++) {
         targetBottle.push(sourceBottle.pop()); 
     }
-    // the cost should be revised and could be changed to equal the depth 
-    return new Node(newState, parentNode, new SimpleEntry<>(i, j), parentNode.getCost() + amountToPour, parentNode.getDepth() + 1);
+    //the cost should be revised and could be changed to equal the depth 
+    return new Node(newState, parentNode, new SimpleEntry<>(i, j), parentNode.getCost() + availableToPour, parentNode.getDepth() + 1);
 
 }
+
+
     
-public SimpleEntry<List<SimpleEntry<Integer, Integer>>, Integer> search(Node initialNode, String strategy){
+public SimpleEntry<List<String>, Integer> search(Node initialNode, String strategy){
     State currentState= initialNode.getState();
     Set<Node> explored = new HashSet<>();
     
@@ -84,15 +86,20 @@ public SimpleEntry<List<SimpleEntry<Integer, Integer>>, Integer> search(Node ini
         Queue<Node> orderOfExploring = new LinkedList<>();
         orderOfExploring.add(initialNode);
         while(!orderOfExploring.isEmpty()){
+            Node currentNode = orderOfExploring.poll();
+            currentState = currentNode.getState();  
         if (currentState.isGoal()){
+            
             //return the path to goal in arraylist
-            return new SimpleEntry<>(new ArrayList<>(), explored.size());
+            return new SimpleEntry<>(getPathToGoal(currentNode), explored.size());
         }
-        explored.add(initialNode);
-        List<SimpleEntry<Integer, Integer>> possibleActions = getSuccessors(initialNode);
+
+        explored.add(currentNode);
+       
+        List<SimpleEntry<Integer, Integer>> possibleActions = getSuccessors(currentNode);
 
         for (SimpleEntry<Integer, Integer> action : possibleActions) {
-         Node childNode= bigPour(action.getKey(), action.getValue(), initialNode);
+         Node childNode= bigPour(action.getKey(), action.getValue(), currentNode);
          if (!explored.contains(childNode)){
              orderOfExploring.add(childNode);
          }
@@ -101,9 +108,31 @@ public SimpleEntry<List<SimpleEntry<Integer, Integer>>, Integer> search(Node ini
             break;
 
         case "DF":
+        Stack<Node> orderOfExploringDf = new Stack<>();
+        orderOfExploringDf.push(initialNode);
+        while(!orderOfExploringDf.isEmpty()){
+            Node currentNode = orderOfExploringDf.pop();
+            currentState = currentNode.getState();  
+        if (currentState.isGoal()){
+            //return the path to goal in arraylist
+            return new SimpleEntry<>(new ArrayList<>(), explored.size());
+        }
+
+        explored.add(currentNode);
+       
+        List<SimpleEntry<Integer, Integer>> possibleActions = getSuccessors(currentNode);
+
+        for (SimpleEntry<Integer, Integer> action : possibleActions) {
+         Node childNode= bigPour(action.getKey(), action.getValue(), currentNode);
+         if (!explored.contains(childNode)){
+            orderOfExploringDf.add(childNode);
+         }
+        }
+    }
         break;
 
         case "ID":
+        int limit = 0;  
         break;
 
         case "UC":
@@ -127,4 +156,8 @@ public SimpleEntry<List<SimpleEntry<Integer, Integer>>, Integer> search(Node ini
     }
     return null;
 }
+
+
+
+
 }
