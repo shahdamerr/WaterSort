@@ -44,6 +44,9 @@ public State copy() {
   return new State(newBottles, this.bottleCapacity,this.numberOfBottles);
 }
 
+
+
+
 //getters
 public List<Stack<String>> getBottles() {
   return bottles;
@@ -92,4 +95,7 @@ public String toString() {
     return stateString.toString();
 }
 
+public boolean isFull(Stack<String> bottle) {
+  return bottle.size() == bottleCapacity;
+}
 }
