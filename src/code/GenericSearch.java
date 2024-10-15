@@ -133,6 +133,7 @@ public SimpleEntry<List<String>, Integer> search(Node initialNode, String strate
 
         case "ID":
         int limit = 0;  
+        SimpleEntry<List<String>, Integer> result = depthLimitedSearch(initialNode, limit, explored);
         break;
 
         case "UC":
@@ -156,6 +157,37 @@ public SimpleEntry<List<String>, Integer> search(Node initialNode, String strate
     }
     return null;
 }
+
+private SimpleEntry<List<String>, Integer> depthLimitedSearch(Node node, int limit, Set<Node> explored) {
+
+    if (node.getDepth() > limit) {
+        return new SimpleEntry<>(null, explored.size());
+    }
+
+    State currentState= node.getState();
+    if (currentState.isGoal()){
+        return new SimpleEntry<>(getPathToGoal(node), explored.size());
+    }
+
+    explored.add(node);
+    List<SimpleEntry<Integer, Integer>> possibleActions = getSuccessors(node);  
+
+    for (SimpleEntry<Integer, Integer> action : possibleActions) {
+        Node childNode = bigPour(action.getKey(), action.getValue(), node);
+
+        if (!explored.contains(childNode)) {
+            SimpleEntry<List<String>, Integer> result = depthLimitedSearch(childNode, limit, explored);
+
+            if (result.getKey() != null) {
+                return result;
+            }
+
+            
+    }
+}
+    return new SimpleEntry<>(null, explored.size());    
+}
+
 
 
 
